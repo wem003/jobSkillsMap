@@ -1,0 +1,7 @@
+# .gitignore
+.env
+__pycache__/
+*.pyc
+n8n_credentials/
+chroma/index/
+*.db
