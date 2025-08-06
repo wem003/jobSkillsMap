@@ -16,5 +16,7 @@ chroma/index/
 # PyCharm project files (optional)
 .idea/
 
-# n8n credentials
+# n8n
 n8n_credentials/
+n8n_data/logs/
+
