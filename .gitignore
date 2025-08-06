@@ -1,7 +1,20 @@
 # .gitignore
+
+# Secrets and creds
 .env
+token.json
+credentials.json
+
+# Python
 __pycache__/
 *.pyc
-n8n_credentials/
+
+# Chroma vector DB
 chroma/index/
 *.db
+
+# PyCharm project files (optional)
+.idea/
+
+# n8n credentials
+n8n_credentials/
