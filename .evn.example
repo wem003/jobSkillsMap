@@ -1,0 +1,30 @@
+# Copy to .env and fill in your values
+
+
+# .env
+#Basic Config
+N8N_HOST=localhost
+N8N_PORT=5678
+N8N_LOG_LEVEL=debug
+N8N_LOG_OUTPUT=file
+N8N_LOG_FILE=/home/node/.n8n/logs/n8n.log
+
+
+# Basic Auth for n8n UI
+N8N_BASIC_AUTH_USER=************
+N8N_BASIC_AUTH_PASSWORD=************!
+N8N_USER_MANAGEMENT_DISABLED=true
+
+# Optional: API Keys (used later)
+OPENAI_API_KEY=************
+GOOGLE_CLIENT_ID=************
+GOOGLE_CLIENT_SECRET=************
+
+# Google Drive Stuff
+GDRIVE_PENDING_FOLDER_ID=************
+GDRIVE_PROCESSED_FOLDER_ID=************
+
+
+#Flask
+FLASK_APP=flask_app.app
+FLASK_ENV=development
