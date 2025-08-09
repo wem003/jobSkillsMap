@@ -1,22 +1,26 @@
-# .gitignore
+# OS/Editor junk
+.DS_Store
+.idea/
+.vscode/
 
-# Secrets and creds
+# Environment & secrets
 .env
+.flaskenv
 token.json
 credentials.json
 
 # Python
 __pycache__/
 *.pyc
-
-# Chroma vector DB
-chroma/index/
+*.pyo
+*.pyd
 *.db
+.venv/
 
-# PyCharm project files (optional)
-.idea/
-
-# n8n
+# Project-specific
+chroma/index/
 n8n_credentials/
-n8n_data/logs/
+n8n_data/
+
+
 

@@ -50,8 +50,16 @@ jobSkillsMap/
 
 ## 🧪 Setup Instructions
 
-**COMING SOON** – Will be updated once the Flask app and n8n workflows are complete.
+**CURRENTLY EVOLVING!!!** 
 
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env  # fill in GDRIVE_* and FLASK_SECRET_KEY
+python scripts/auth_google.py
+export FLASK_APP=app.py
+flask run  # http://127.0.0.1:5000
+```
 
 ---
 
@@ -105,7 +113,7 @@ jobSkillsMap/
 - **No job scraping** – respect TOS of job boards
 - No authentication in the initial version beyond required API keys (single-user app, running locally)
 - Visualization is optional – raw CSV/text output is fine for now
-- No AI code assist tools were used for coding; learning resources included ChatGPT, YouTube, and Udemy
+- Learning resources included ChatGPT, YouTube, and Udemy.
 
 
 ---
