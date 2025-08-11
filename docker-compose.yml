@@ -1,23 +1,52 @@
-version: '3.1'
+version: "3.9"
 
 services:
-  n8n:
-    image: n8nio/n8n
-
-    ports:
-      - 5678:5678
-    env_file:
-      - .env
+  flask:
+    build:
+      context: .
+      dockerfile: dockerfile.flask
+    env_file: .env
     environment:
-      - N8N_HOST=${N8N_HOST}
-      - N8N_PORT=${N8N_PORT}
-      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER}
-      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD}
-      - N8N_USER_MANAGEMENT_DISABLED=${N8N_USER_MANAGEMENT_DISABLED}
+      # keep these so drive creds, etc., flow in
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-
+      - GDRIVE_PENDING_FOLDER_ID=${GDRIVE_PENDING_FOLDER_ID}
+      - GDRIVE_PROCESSED_FOLDER_ID=${GDRIVE_PROCESSED_FOLDER_ID}
+      - SECRETS_DIR=/run/secrets
+      # ensure Flask sees the app factory just like local
+      - FLASK_APP=app.py
+      - FLASK_ENV=${FLASK_ENV:-development}
+    ports:
+      - "${FLASK_PORT:-5000}:5000"
     volumes:
-      - ./n8n_data:/home/node/.n8n
+      - ./:/app:delegated
+      - ./secrets:/run/secrets:ro
+
+  n8n:
+    image: n8nio/n8n:latest
+    env_file: .env
+    environment:
+      - N8N_HOST=${N8N_HOST:-localhost}
+      - N8N_PORT=${N8N_PORT:-5678}
+      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER:-admin}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD:-admin}
+      - N8N_SECURE_COOKIE=${N8N_SECURE_COOKIE:-false}
+      - GENERIC_TIMEZONE=America/New_York
+      - EXECUTIONS_DATA_SAVE_ON_SUCCESS=none
+    ports:
+      - "${N8N_PORT:-5678}:5678"
+    volumes:
+      - ./n8n_credentials:/home/node/.n8n
+
+  chroma:
+    image: chromadb/chroma:latest
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./chroma:/chroma/.chroma/index
     restart: unless-stopped
+
+networks:
+  default:
+    name: jobskills_net

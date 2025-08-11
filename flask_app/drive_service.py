@@ -15,8 +15,15 @@ from google.auth.exceptions import RefreshError
 
 # ---- OAuth settings ----
 SCOPES = ["https://www.googleapis.com/auth/drive"]
-TOKEN_PATH = "token.json"          # persisted after first auth
-CREDS_PATH = "credentials.json"    # downloaded from Google Cloud console
+SECRETS_DIR = os.getenv("SECRETS_DIR", os.getenv("SECRETS_DIR".lower(), "secrets"))
+CREDS_PATH = os.path.join(SECRETS_DIR, "credentials.json")
+TOKEN_PATH = os.path.join(SECRETS_DIR, "token.json")
+
+
+# ---- OAuth settings ----
+#SCOPES = ["https://www.googleapis.com/auth/drive"]
+#TOKEN_PATH = "token.json"          # persisted after first auth
+#CREDS_PATH = "credentials.json"    # downloaded from Google Cloud console
 
 @dataclass
 class DriveFile:
