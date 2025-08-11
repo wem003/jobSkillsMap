@@ -19,47 +19,14 @@ This project analyzes job descriptions to extract and track trending technical s
 - **Google Drive & Sheets APIs**: Input and output data
 - **OpenAI API**: Skill extraction using LLMs
 
-## 🗂️ Project Structure
-
-> **Note:** This structure includes planned folders for the full implementation.  
-> Some directories may not exist or be populated until the corresponding features are complete.
-
-```text
-jobSkillsMap/
-├── docker-compose.yml         # n8n container setup
-├── .env                       # Secrets and API keys (excluded from Git)
-├── requirements.txt           # Python dependencies
-├── chroma/                    # Chroma vectorDB files
-├── n8n_credentials/           # n8n workflows and saved credentials
-├── gdrive/                    # Google API auth and I/O helpers
-├── pipelines/                 # Python scripts for skill extraction, DB updates
-│   ├── extract_skills.py
-│   └── update_chroma.py
-├── webapp/                    # Flask app for submission & status tabs
-│   ├── templates/
-│   └── static/
-├── data/
-│   ├── pending/               # Google Drive "Pending" folder mirror
-│   └── processed/             # Google Drive "Processed" folder mirror
-├── docs/                      # Architecture diagrams, notes, screenshots
-└── README.md
-```
-
-
+## Project Status
+This project is under active development.  
+Final directory structure and setup instructions will be documented here once the architecture is stable.
 
 
 ## 🧪 Setup Instructions
 
 **CURRENTLY EVOLVING!!!** 
-
-```bash
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env  # fill in GDRIVE_* and FLASK_SECRET_KEY
-python scripts/auth_google.py
-export FLASK_APP=app.py
-flask run  # http://127.0.0.1:5000
-```
 
 ---
 
