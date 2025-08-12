@@ -7,14 +7,12 @@ services:
       dockerfile: dockerfile.flask
     env_file: .env
     environment:
-      # keep these so drive creds, etc., flow in
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-      - GDRIVE_PENDING_FOLDER_ID=${GDRIVE_PENDING_FOLDER_ID}
-      - GDRIVE_PROCESSED_FOLDER_ID=${GDRIVE_PROCESSED_FOLDER_ID}
+      - GDRIVE_JOBDOCS_PENDING_ID=${GDRIVE_JOBDOCS_PENDING_ID}
+      - GDRIVE_JOBDOCS_PROCESSED_ID=${GDRIVE_JOBDOCS_PROCESSED_ID}
       - SECRETS_DIR=/run/secrets
-      # ensure Flask sees the app factory just like local
       - FLASK_APP=app.py
       - FLASK_ENV=${FLASK_ENV:-development}
     ports:
@@ -22,9 +20,10 @@ services:
     volumes:
       - ./:/app:delegated
       - ./secrets:/run/secrets:ro
+    restart: unless-stopped
 
   n8n:
-    image: n8nio/n8n:latest
+    image: n8nio/n8n:latest   # consider pinning a specific version once you’re happy
     env_file: .env
     environment:
       - N8N_HOST=${N8N_HOST:-localhost}
@@ -34,10 +33,21 @@ services:
       - N8N_SECURE_COOKIE=${N8N_SECURE_COOKIE:-false}
       - GENERIC_TIMEZONE=America/New_York
       - EXECUTIONS_DATA_SAVE_ON_SUCCESS=none
+      # expose project envs so workflows can use {{$env.VAR}}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GDRIVE_JOBDOCS_PENDING_ID=${GDRIVE_JOBDOCS_PENDING_ID}
+      - GDRIVE_JOBDOCS_PROCESSED_ID=${GDRIVE_JOBDOCS_PROCESSED_ID}
     ports:
       - "${N8N_PORT:-5678}:5678"
     volumes:
-      - ./n8n_credentials:/home/node/.n8n
+      - ./n8n_data:/home/node/.n8n
+      - ./python_helpers:/project/python_helpers   # optional, handy for scripts
+      - ./chroma:/project/chroma                  # optional, if n8n needs it
+    restart: unless-stopped
+    depends_on:
+      - chroma
 
   chroma:
     image: chromadb/chroma:latest

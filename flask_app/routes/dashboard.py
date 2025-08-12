@@ -6,8 +6,8 @@ bp = Blueprint("ui", __name__)
 @bp.get("/")
 def index():
     cfg = current_app.config
-    waiting = list_in_folder(cfg["GDRIVE_PENDING_FOLDER_ID"])
-    processed = list_in_folder(cfg["GDRIVE_PROCESSED_FOLDER_ID"])
+    waiting = list_in_folder(cfg["GDRIVE_JOBDOCS_PENDING_ID"])
+    processed = list_in_folder(cfg["GDRIVE_JOBDOCS_PROCESSED_ID"])
     # pass through any msg flags
     ok = request.args.get("ok")
     err = request.args.get("err")
@@ -22,10 +22,10 @@ def upload():
     if not company or not title or not description:
         return redirect(url_for("ui.index", err="missing"))
 
-    create_text_file(current_app.config["GDRIVE_PENDING_FOLDER_ID"], company, title, description)
+    create_text_file(current_app.config["GDRIVE_JOBDOCS_PENDING_ID"], company, title, description)
     return redirect(url_for("ui.index", ok="added"))
 
 @bp.post("/mark_processed/<file_id>")
 def mark_processed(file_id):
-    move_file(file_id, current_app.config["GDRIVE_PROCESSED_FOLDER_ID"])
+    move_file(file_id, current_app.config["GDRIVE_JOBDOCS_PROCESSED_ID"])
     return redirect(url_for("ui.index", ok="moved"))
