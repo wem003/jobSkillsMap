@@ -1,5 +1,5 @@
 from __future__ import annotations
-import io, os, re
+import io, os, re, json
 from dataclasses import dataclass
 from datetime import datetime
 from typing import List
@@ -88,23 +88,64 @@ def list_in_folder(folder_id: str) -> List[DriveFile]:
         out.append(DriveFile(id=it["id"], name=it["name"], size_kb=size_kb, mtime=mtime))
     return out
 
-def create_text_file(folder_id: str, company: str, title: str, description: str) -> DriveFile:
+# def create_text_file(folder_id: str, company: str, title: str, normalized_title: str, description: str) -> DriveFile:
+#     service = _svc()
+#     date_str = datetime.now().strftime("%m_%d_%y")
+#     filename = f"{_clean_part(company)}_{_clean_part(title)}_{date_str}.txt"
+#     body = (
+#         f"Company: {company}\n"
+#         f"Title: {title}\n\n"
+#         f"Normalized Title: {normalized_title}\n\n"
+#         "****************\n"
+#         "Description:\n"
+#         f"{description}\n"
+#     )
+#     meta = {"name": filename, "parents": [folder_id]}
+#     media = MediaIoBaseUpload(io.BytesIO(body.encode("utf-8")), mimetype="text/plain")
+#     created = service.files().create(body=meta, media_body=media, fields="id, name, size, modifiedTime").execute()
+#     size_kb = int(int(created.get("size", 0)) / 1024) if created.get("size") else 0
+#     mtime = created["modifiedTime"].replace("T", " ").replace("Z", "")
+#     return DriveFile(id=created["id"], name=created["name"], size_kb=size_kb, mtime=mtime)
+
+def create_json_file(folder_id: str,
+                     company: str,
+                     title_raw: str,
+                     normalized_title: str,
+                     description: str,
+                     posted_at: str,
+                     sheet_id: str) -> DriveFile:
     service = _svc()
     date_str = datetime.now().strftime("%m_%d_%y")
-    filename = f"{_clean_part(company)}_{_clean_part(title)}_{date_str}.txt"
-    body = (
-        f"Company: {company}\n"
-        f"Title: {title}\n\n"
-        "****************\n"
-        "Description:\n"
-        f"{description}\n"
+    filename = f"{_clean_part(company)}_{_clean_part(title_raw)}_{date_str}.json"
+
+    payload = {
+        "company": company,
+        "title_raw": title_raw,
+        "normalized_title": normalized_title,
+        "description": description,
+        "posted_at": posted_at,
+        "filename_or_id": "",  # could be filled by n8n or later in pipeline
+        "skills": [],
+        "sheet_id": sheet_id
+    }
+
+    media = MediaIoBaseUpload(
+        io.BytesIO(json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")),
+        mimetype="application/json"
     )
     meta = {"name": filename, "parents": [folder_id]}
-    media = MediaIoBaseUpload(io.BytesIO(body.encode("utf-8")), mimetype="text/plain")
-    created = service.files().create(body=meta, media_body=media, fields="id, name, size, modifiedTime").execute()
+
+    created = service.files().create(
+        body=meta,
+        media_body=media,
+        fields="id, name, size, modifiedTime"
+    ).execute()
+
     size_kb = int(int(created.get("size", 0)) / 1024) if created.get("size") else 0
     mtime = created["modifiedTime"].replace("T", " ").replace("Z", "")
     return DriveFile(id=created["id"], name=created["name"], size_kb=size_kb, mtime=mtime)
+
+
 
 def move_file(file_id: str, to_folder_id: str) -> None:
     service = _svc()

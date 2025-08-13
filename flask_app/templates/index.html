@@ -14,27 +14,58 @@
   <div class="flash">Moved to Processed.</div>
 {% endif %}
 
+<!-- Strip ?ok=... / ?err=... from the URL AFTER the banner renders -->
+<script>
+  (function () {
+    const url = new URL(window.location.href);
+    if (url.searchParams.has('ok') || url.searchParams.has('err')) {
+      // Keep the current tab hash (#waiting/#processed) while removing the query
+      const clean = url.pathname + (window.location.hash || '');
+      requestAnimationFrame(() => window.history.replaceState(null, '', clean));
+    }
+  })();
+</script>
+
+
 <!-- Add form -->
 <div class="card">
   <h2>Add Job Description</h2>
-    <form action="{{ url_for('ui.upload') }}" method="post" class="grid">
-      <div class="field">
-        <label>Company</label>
-        <input name="company" required />
-      </div>
-      <div class="field">
-        <label>Title</label>
-        <input name="title" required />
-      </div>
-      <div class="field" style="grid-column: 1 / -1;">
-        <label>Description</label>
-        <textarea name="description" rows="6" required></textarea>
-      </div>
-      <div style="grid-column: 1 / -1; display:flex; gap: 8px;">
-        <button class="btn btn-primary" type="submit">Submit</button>
-        <button class="btn" type="reset">Clear</button>
-      </div>
-    </form>
+  <form action="{{ url_for('ui.upload') }}" method="post" class="grid">
+
+    <div class="field">
+      <label>Company</label>
+      <input name="company" required />
+    </div>
+
+    <div class="field">
+      <label>Title</label>
+      <input name="title" required />
+    </div>
+
+    <div class="field">
+      <label for="normalized_title">Normalized Title</label>
+      <select id="normalized_title" name="normalized_title" required>
+        <option value="" disabled selected>Select a bucket…</option>
+        <option value="Software Engineering Manager">Software Engineering Manager</option>
+        <option value="Sr. Software Engineering Manager">Sr. Software Engineering Manager</option>
+        <option value="Director of Software Engineering">Director of Software Engineering</option>
+        <option value="Sr. Director of Software Engineering">Sr. Director of Software Engineering</option>
+        <option value="VP of Software Engineering">VP of Software Engineering</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+
+    <div class="field" style="grid-column: 1 / -1;">
+      <label>Description</label>
+      <textarea name="description" rows="6" required></textarea>
+    </div>
+
+    <div style="grid-column: 1 / -1; display:flex; gap: 8px;">
+      <button class="btn btn-primary" type="submit">Submit</button>
+      <button class="btn" type="reset">Clear</button>
+    </div>
+
+  </form>
 </div>
 
 <hr style="border:none; border-top:1px solid var(--border); margin:24px 0;">
